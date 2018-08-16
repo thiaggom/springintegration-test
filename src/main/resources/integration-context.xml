@@ -8,10 +8,8 @@
 
 	<int:channel id="channel1In" />
 
-	<int:channel id="channel1Out" />
-		
 	<bean class="com.example.demo.service.PrintService" id="printService" />
 	
-	<int:service-activator ref="printService" method="print" input-channel="channel1In" output-channel="channel1Out"/>
+	<int:service-activator ref="printService" method="print" input-channel="channel1In"/>
 
 </beans>
