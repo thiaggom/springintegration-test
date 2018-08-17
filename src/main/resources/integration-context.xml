@@ -8,16 +8,15 @@
 
 	<int:gateway service-interface="com.example.demo.service.PrinterGateway" default-request-channel="channel1In"/>
 
-	<bean id="customComparator" class="com.example.demo.message.CustomMessageComparator" />
-
 	<int:channel id="channel1In">
-		<int:priority-queue capacity="10" comparator="customComparator"/>
 	</int:channel>
 
 	<bean class="com.example.demo.service.PrintService" id="printService" />
 
-	<int:service-activator ref="printService" method="print" input-channel="channel1In">
-		<int:poller fixed-rate="10" time-unit="SECONDS" max-messages-per-poll="2"/>
-	</int:service-activator>
+	<bean class="com.example.demo.service.UppercasePrintService" id="uppercasePrintService" />
+
+	<int:service-activator order="1" ref="printService" method="print" input-channel="channel1In" />
+
+	<int:service-activator order="2" ref="uppercasePrintService" method="print" input-channel="channel1In" />
 
 </beans>
