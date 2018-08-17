@@ -9,7 +9,7 @@ public class PrintService {
 		System.out.println(message.getHeaders());
 		System.out.println(message.getPayload());
 		
-		return MessageBuilder.withPayload("sending message to the out channel...").build();
+		return MessageBuilder.withPayload("sending a reply for message "+message.getHeaders().get("mesageNumber")).build();
 	}
 	
 }

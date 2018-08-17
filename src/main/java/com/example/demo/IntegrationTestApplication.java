@@ -1,17 +1,20 @@
 package com.example.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.core.MessagingTemplate;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
+
+import com.example.demo.service.PrinterGateway;
 
 @SpringBootApplication
 @Configuration
@@ -19,8 +22,7 @@ import org.springframework.messaging.Message;
 public class IntegrationTestApplication implements ApplicationRunner{
 
 	@Autowired
-	@Qualifier("channel1In")
-	private DirectChannel directInChannel;
+	private PrinterGateway gateway;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(IntegrationTestApplication.class, args);
@@ -29,14 +31,19 @@ public class IntegrationTestApplication implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 
-		Message<String> message = MessageBuilder.withPayload("Message created successfully!").setHeader("header1", "Teste header").build(); 
-
-		MessagingTemplate template = new MessagingTemplate();
+		List<Future<Message<String>>> futures = new ArrayList<>();
 		
-		Message<?> returnedMessage = template.sendAndReceive(directInChannel, message);
+		for (int x = 1; x <= 10; x++) {
+			Message<String> message = MessageBuilder.withPayload("Printing message nº "+x)
+					.setHeader("messageNumber", x).build();
+			
+			System.out.println("Seding message "+x);
+			futures.add(this.gateway.print(message));
+		}
 		
-		System.out.println(returnedMessage.getPayload());
-		
+		for (Future<Message<String>> future : futures) {
+			System.out.println(future.get().getPayload());
+		}
 	}
 	
 	

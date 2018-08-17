@@ -6,10 +6,16 @@
 		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
 
 
-	<int:channel id="channel1In" />
+	<int:gateway service-interface="com.example.demo.service.PrinterGateway" default-request-channel="channel1In"/>
+
+	<int:channel id="channel1In">
+		<int:queue capacity="10"/>
+	</int:channel>
 
 	<bean class="com.example.demo.service.PrintService" id="printService" />
 	
-	<int:service-activator ref="printService" method="print" input-channel="channel1In"/>
+	<int:service-activator ref="printService" method="print" input-channel="channel1In">
+		<int:poller fixed-rate="5" time-unit="SECONDS" max-messages-per-poll="2"/>
+	</int:service-activator>
 
 </beans>
