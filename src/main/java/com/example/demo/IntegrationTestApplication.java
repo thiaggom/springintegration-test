@@ -2,6 +2,7 @@ package com.example.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,17 @@ public class IntegrationTestApplication implements ApplicationRunner{
 	}
 
 	@Override
-	public void run(ApplicationArguments args) throws Exception {
+	public void run(ApplicationArguments args) throws InterruptedException, ExecutionException {
 
 		List<Future<Message<String>>> futures = new ArrayList<>();
 		
-		for (int x = 1; x <= 10; x++) {
+		for (int x = 0; x < 10; x++) {
 			Message<String> message = MessageBuilder.withPayload("Printing message nº "+x)
 					.setHeader("messageNumber", x).build();
 			
+//			Message<String> message = MessageBuilder.withPayload("Printing message nº "+x)
+//					.setHeader("messageNumber", x).setPriority(x).build();
+//			
 			System.out.println("Seding message "+x);
 			futures.add(this.gateway.print(message));
 		}
